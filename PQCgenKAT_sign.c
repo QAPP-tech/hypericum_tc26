@@ -33,7 +33,7 @@ protection within the United States.
 #include <string.h>
 #include <ctype.h>
 #include "api.h"
-#include "rng.h"
+#include "drbg.h"
 
 #define MAX_MARKER_LEN 50
 
@@ -78,14 +78,16 @@ int main()
     for (int i = 0; i < 48; i++)
         entropy_input[i] = i;
 
+    const hash_algo_t hash_algo = hash_algo_new();
+
     randombytes_init(entropy_input, NULL, 256);
     for (int i = 0; i < 100; i++) {
         fprintf(fp_req, "count = %d\n", i);
-        randombytes(seed, 48);
+        randombytes(hash_algo, seed, 48);
         fprintBstr(fp_req, "seed = ", seed, 48);
         mlen = 33 * (i + 1);
         fprintf(fp_req, "mlen = %llu\n", mlen);
-        randombytes(msg, mlen);
+        randombytes(hash_algo, msg, mlen);
         fprintBstr(fp_req, "msg = ", msg, mlen);
         fprintf(fp_req, "pk =\n");
         fprintf(fp_req, "sk =\n");
@@ -93,6 +95,8 @@ int main()
         fprintf(fp_req, "sm =\n\n");
     }
     fclose(fp_req);
+
+    hash_algo_free(hash_algo);
 
     // Create the RESPONSE file based on what's in the REQUEST file
     if ((fp_req = fopen(fn_req, "r")) == NULL) {
