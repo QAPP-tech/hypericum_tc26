@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-uint8_t pqlr_get_entropy_from_urandom(void* buf, size_t len)
+uint8_t get_entropy_from_urandom(void* buf, size_t len)
 {
     FILE* urandom_fd = NULL;
 

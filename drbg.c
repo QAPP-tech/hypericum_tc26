@@ -19,7 +19,7 @@ void randombytes_init(uint8_t* entropy_input)
     }
 }
 
-// get entropy from hardware or iteratively deduce from seed
+// get entropy from hardware or recursively deduce from seed
 static int get_entropy(
     const hash_algo_t hash_algo, hash_function_ctx_new_t ctx, void* data)
 {
@@ -27,7 +27,7 @@ static int get_entropy(
     if (1 == DRBG_ctx.is_hardware_based) {
         ret = get_hardware_entropy(data, DRBG_INIT_BYTES_LEN);
     } else {
-        // iteratively update state
+        // recursively update state
         hash_algo->ctx_init(ctx);  // clean state
         hash_algo->ctx_update(
             ctx, DRBG_ctx.entropy_source, DRBG_INIT_BYTES_LEN);

@@ -3,7 +3,7 @@
 #ifdef WIN32
 #include <windows.h>
 
-uint8_t pqlr_get_entropy_from_cryptoapi(void* buf, size_t len)
+uint8_t get_entropy_from_cryptoapi(void* buf, size_t len)
 {
     HCRYPTPROV hProvider = (HCRYPTPROV)NULL;
 
