@@ -20,4 +20,4 @@
  * @param[out] data pointer to buffer where entropy will be written
  * @param size requested entropy size
  */
-int get_entropy(void* data, size_t size);
+int get_hardware_entropy(void* data, size_t size);

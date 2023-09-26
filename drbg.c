@@ -5,11 +5,19 @@
 
 #include <string.h>
 
-void randombytes_init(
-    unsigned char* entropy_input,
-    unsigned char* personalization_string,
-    int security_strength)
-{}
+static drbg_state DRBG_ctx = { .entropy_source = { 0 },
+                               .is_hardware_based = 1 };
+
+void randombytes_init(uint8_t* entropy_input)
+{
+    if (entropy_input == NULL) {
+        DRBG_ctx.is_hardware_based = 1;
+    } else {
+        DRBG_ctx.is_hardware_based = 0;
+        // set initial seed
+        memcpy(DRBG_ctx.entropy_source, entropy_input, DRBG_INIT_BYTES_LEN);
+    }
+}
 
 // increment big integer, least significant bit is the right most
 // { 0x00, 0x00, 0xFF, 0x00 } -> {0x00, 0x00, 0xFF, 0x01}, return 0
@@ -26,6 +34,22 @@ static int increment(uint8_t* big_integer, size_t len)
         overflow = c == UINT8_MAX;
     }
     return overflow;
+}
+
+// get entropy from hardware or iteratively deduce from seed
+static int get_entropy(void* data)
+{
+    int ret = 0;
+    if (1 == DRBG_ctx.is_hardware_based) {
+        ret = get_hardware_entropy(data, DRBG_INIT_BYTES_LEN);
+    } else {
+        // iteratively update state
+        increment(DRBG_ctx.entropy_source, DRBG_INIT_BYTES_LEN);
+
+        // copy current pseudorandomness
+        memcpy(data, DRBG_ctx.entropy_source, DRBG_INIT_BYTES_LEN);
+    }
+    return ret;
 }
 
 static int step(
@@ -52,8 +76,7 @@ int randombytes(const hash_algo_t hash_algo, uint8_t* x, size_t xlen)
 {
     const size_t q = xlen / hash_algo->output_size;
     const size_t r = xlen % hash_algo->output_size;
-    const size_t init_len = 32;  // initial number of random bytes
-    uint8_t* x_ptr = x + xlen;   // end of x
+    uint8_t* x_ptr = x + xlen;  // end of x
 
     hash_function_ctx_new_t ctx = hash_algo->ctx_new();
 
@@ -61,10 +84,12 @@ int randombytes(const hash_algo_t hash_algo, uint8_t* x, size_t xlen)
 
     memset(x, 0, xlen);
 
-    if (get_entropy(u, init_len) != 0) {
+    if (0 != get_entropy(u)) {
+        hash_algo->ctx_free(ctx);
         return 1;
     }
-    memset(u + init_len, 0, sizeof(u) - init_len);
+
+    memset(u + DRBG_INIT_BYTES_LEN, 0, sizeof(u) - DRBG_INIT_BYTES_LEN);
 
     if (q != 0) {  // step 4
         for (size_t i = 0; i < q; ++i) {

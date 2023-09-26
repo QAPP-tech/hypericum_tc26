@@ -52,9 +52,9 @@ int main()
 {
     char fn_req[32], fn_rsp[32];
     FILE *fp_req, *fp_rsp;
-    unsigned char seed[48];
+    unsigned char seed[DRBG_INIT_BYTES_LEN];
     unsigned char msg[3300];
-    unsigned char entropy_input[48];
+    unsigned char entropy_input[DRBG_INIT_BYTES_LEN];
     unsigned char *m, *sm, *m1;
     unsigned long long mlen, smlen, mlen1;
     int count;
@@ -75,16 +75,16 @@ int main()
         return KAT_FILE_OPEN_ERROR;
     }
 
-    for (int i = 0; i < 48; i++)
+    for (int i = 0; i < DRBG_INIT_BYTES_LEN; i++)
         entropy_input[i] = i;
 
     const hash_algo_t hash_algo = hash_algo_new();
 
-    randombytes_init(entropy_input, NULL, 256);
+    randombytes_init(entropy_input);
     for (int i = 0; i < 100; i++) {
         fprintf(fp_req, "count = %d\n", i);
-        randombytes(hash_algo, seed, 48);
-        fprintBstr(fp_req, "seed = ", seed, 48);
+        randombytes(hash_algo, seed, DRBG_INIT_BYTES_LEN);
+        fprintBstr(fp_req, "seed = ", seed, DRBG_INIT_BYTES_LEN);
         mlen = 33 * (i + 1);
         fprintf(fp_req, "mlen = %llu\n", mlen);
         randombytes(hash_algo, msg, mlen);
@@ -115,13 +115,13 @@ int main()
         }
         fprintf(fp_rsp, "count = %d\n", count);
 
-        if (!ReadHex(fp_req, seed, 48, "seed = ")) {
+        if (!ReadHex(fp_req, seed, DRBG_INIT_BYTES_LEN, "seed = ")) {
             printf("ERROR: unable to read 'seed' from <%s>\n", fn_req);
             return KAT_DATA_ERROR;
         }
-        fprintBstr(fp_rsp, "seed = ", seed, 48);
+        fprintBstr(fp_rsp, "seed = ", seed, DRBG_INIT_BYTES_LEN);
 
-        randombytes_init(seed, NULL, 256);
+        randombytes_init(seed);
 
         if (FindMarker(fp_req, "mlen = "))
             fscanf(fp_req, "%llu", &mlen);

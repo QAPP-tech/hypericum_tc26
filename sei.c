@@ -9,7 +9,7 @@
 #include <string.h>
 
 
-int get_entropy(void* data, size_t size)
+int get_hardware_entropy(void* data, size_t size)
 {
     size_t retry_count = PQLR_SEI_RETRY_COUNT;
     while (retry_count > 0) {
