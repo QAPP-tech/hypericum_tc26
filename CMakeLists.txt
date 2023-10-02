@@ -10,7 +10,6 @@ FIND_PACKAGE(Sanitizers)
 SET(API_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 SET(PARAMSETS_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/include/paramsets)
 SET(STREEBOG_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/streebog)
-SET(DRBG_DIR       ${CMAKE_CURRENT_SOURCE_DIR}/aes-ctr-drbg)
 
 SET(PARAMSET "fast_ver" CACHE STRING "Select a hypericum parameter set")
 SET_PROPERTY(CACHE PARAMSET PROPERTY STRINGS "fast_ver"
@@ -32,7 +31,6 @@ ENDIF()
 CONFIGURE_FILE(current-paramset.h.in current-paramset.h)
 
 ADD_SUBDIRECTORY(${STREEBOG_DIR})
-ADD_SUBDIRECTORY(${DRBG_DIR})
 
 SET(HEADER_FILES ${API_HEADER_DIR}/api.h
                  ${API_HEADER_DIR}/params.h
@@ -40,6 +38,11 @@ SET(HEADER_FILES ${API_HEADER_DIR}/api.h
                  ${PARAMSETS_DIR}/params_fast_ver.h
                  ${PARAMSETS_DIR}/params_fast_sign.h
                  ${PARAMSETS_DIR}/params_small_sign.h
+
+                 sei.h
+                 sei_cryptoapi.h
+                 sei_urandom.h
+                 drbg.h
 
                  stack.h
                  sign.h
@@ -53,7 +56,13 @@ SET(HEADER_FILES ${API_HEADER_DIR}/api.h
                  xmssmt.h
                  fors.h)
 
-SET(SOURCE_FILES adrs.c
+SET(SOURCE_FILES
+                 sei.c
+                 sei_cryptoapi.c
+                 sei_urandom.c
+                 drbg.c
+
+                 adrs.c
                  wotsc.c
                  sign.c
                  hash.c
@@ -70,7 +79,7 @@ ADD_LIBRARY(${PROJECT_NAME}
             ${HEADER_FILES}
             ${SOURCE_FILES})
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} PUBLIC drbg streebog)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} PUBLIC streebog)
 ADD_SANITIZERS(${PROJECT_NAME})
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PRIVATE ${STREEBOG_DIR})
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC ${API_HEADER_DIR}

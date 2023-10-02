@@ -1,6 +1,6 @@
 #include "wotsc.h"
 #include "streebog.h"
-#include "rng.h"
+#include "drbg.h"
 #include "params.h"
 #include "hash.h"
 #include "adrs.h"
@@ -112,7 +112,7 @@ int hash_convert(
         hypericum_adrs_get_bytes(adrs, adrs_bytes);
         hash_algo->ctx_update(h_ctx, adrs_bytes, HYPERICUM_ADRS_SIZE_BYTES);
 
-        if ((ret = randombytes(s, HYPERICUM_H_NONCE_BYTES)) != 0) {
+        if ((ret = randombytes(hash_algo, s, HYPERICUM_H_NONCE_BYTES)) != 0) {
             hash_algo->ctx_free(h_ctx);
             return ret;
         }

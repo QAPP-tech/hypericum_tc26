@@ -1,6 +1,6 @@
 #include "api.h"
 #include "adrs.h"
-#include "rng.h"
+#include "drbg.h"
 #include "hash.h"
 #include "fors.h"
 #include "xmssmt.h"
@@ -19,17 +19,17 @@ int hypericum_generate_keys(uint8_t* result_sk, uint8_t* result_pk)
     hypericum_sk_internal_t sk = hypericum_sk_parse(result_sk);
 
     int ret = 0;
-    if ((ret = randombytes(sk.seed, HYPERICUM_N_BYTES)) != 0) {
+    if ((ret = randombytes(hash_algo, sk.seed, HYPERICUM_N_BYTES)) != 0) {
         hash_algo_free(hash_algo);
         return ret;
     }
 
-    if ((ret = randombytes(sk.prf, HYPERICUM_N_BYTES)) != 0) {
+    if ((ret = randombytes(hash_algo, sk.prf, HYPERICUM_N_BYTES)) != 0) {
         hash_algo_free(hash_algo);
         return ret;
     }
 
-    if ((ret = randombytes(pk.seed, HYPERICUM_N_BYTES)) != 0) {
+    if ((ret = randombytes(hash_algo, pk.seed, HYPERICUM_N_BYTES)) != 0) {
         hash_algo_free(hash_algo);
         return ret;
     }
@@ -85,7 +85,7 @@ int hypericum_sign(
     uint8_t s_found = 0;
 
     for (uint32_t i = 0; i < HYPERICUM_SIGN_MAX_ITERATIONS; ++i) {
-        if ((ret = randombytes(sig.s, HYPERICUM_N_BYTES)) != 0) {
+        if ((ret = randombytes(hash_algo, sig.s, HYPERICUM_N_BYTES)) != 0) {
             hash_algo_free(hash_algo);
             return ret;
         }
