@@ -53,7 +53,7 @@ static uint32_t be_to_u32(uint8_t* a)
 
 static uint64_t be_to_u64(uint8_t* a)
 {
-    uint32_t ret = a[0];
+    uint64_t ret = a[0];
     for (uint8_t i = 1; i < 8; ++i) {
         ret = (ret << 8) | a[i];
     }
