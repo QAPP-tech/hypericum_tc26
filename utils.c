@@ -49,3 +49,13 @@ struct Node* hypericum_create_node(uint32_t h)
 
     return node;
 }
+
+void fill_bytes32(uint8_t* bytes, uint32_t value)
+{
+    // big endian
+    bytes[0] = value >> 8 * 3 & 0xFF;
+    bytes[1] = value >> 8 * 2 & 0xFF;
+    bytes[2] = value >> 8 & 0xFF;
+    bytes[3] = value & 0xFF;
+}
+

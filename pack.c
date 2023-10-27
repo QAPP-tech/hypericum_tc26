@@ -51,7 +51,7 @@ hypericum_sig_internal_t hypericum_sig_parse(uint8_t* sig)
     sig += HYPERICUM_N_BYTES;
 
     sig_parsed.s = sig;
-    sig += HYPERICUM_N_BYTES;
+    sig += 4;
 
     sig_parsed.sig_fors = sig;
     sig += HYP_FORSC_BYTES;

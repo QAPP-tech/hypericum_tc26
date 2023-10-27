@@ -59,18 +59,7 @@ int chain(
 
     hypericum_adrs_set_wots_hash_hash_address(adrs, j + k - 1);
 
-    // concatenate pk_seed | adrs | element
-    const size_t adrs_size = HYPERICUM_ADRS_SIZE_BYTES;
-    const size_t n = HYPERICUM_N_BYTES;
-    const size_t concat_len = n + adrs_size + (res == 0 ? output_size : 0);
-    ALLOC_ON_STACK(uint8_t, concat, concat_len);
-    memcpy(concat, pk_seed, n);
-    memcpy(concat + n, adrs, adrs_size);
-    if (res == 0) {
-        memcpy(concat + n + adrs_size, element, output_size);
-    }
-
-    hash_algo->hash(concat, concat_len, element);
+    hypericum_f(hash_algo, pk_seed, adrs, element, element);
 
     return 0;
 }

@@ -181,15 +181,6 @@ void hypericum_adrs_set_keygen_wots_chain_address(
     adrs->data.keygen_wots.chain_address = value;
 }
 
-static void fill_bytes32(uint8_t* bytes, uint32_t value)
-{
-    // big endian
-    bytes[0] = value >> 8 * 3 & 0xFF;
-    bytes[1] = value >> 8 * 2 & 0xFF;
-    bytes[2] = value >> 8 & 0xFF;
-    bytes[3] = value & 0xFF;
-}
-
 static void fill_wots_hash(
     uint8_t* bytes, const struct hypericum_adrs_wots_hash* wots_hash)
 {

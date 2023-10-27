@@ -213,7 +213,7 @@ void hypericum_h_msg(
     hash_algo->ctx_update(ctx, rnd, n);
     hash_algo->ctx_update(ctx, pk_seed, n);
     hash_algo->ctx_update(ctx, pk_root, n);
-    hash_algo->ctx_update(ctx, salt, n);
+    hash_algo->ctx_update(ctx, salt, sizeof(uint32_t));
     hash_algo->ctx_update(ctx, msg, msg_len);
 
     hash_algo->ctx_final(ctx, tmp);
