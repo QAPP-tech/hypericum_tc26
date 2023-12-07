@@ -35,7 +35,7 @@ typedef struct _adrs hypericum_adrs_t;
 /**
  * @brief Computes 256-bit hash with Streebog hash function.
  * Is used to compute WOTS+C chains.
- * @param hypericum Hypericum context.
+ * @param hash_algo hash context.
  * @param pk_seed public key seed, length is set by constant
  * HYPERICUM_N_BYTES.
  * @param adrs hypericum addressing structure.
@@ -52,7 +52,7 @@ void hypericum_f(
 /**
  * @brief Computes 256-bit hash with Streebog hash function.
  * Is used to compute nodes in Merkle trees, including FORS.
- * @param hypericum Hypericum context.
+ * @param hash_algo hash context.
  * @param pk_seed public key seed, length is set by constant
  * HYPERICUM_N_BYTES.
  * @param adrs hypericum addressing structure.
@@ -71,7 +71,7 @@ void hypericum_h_node(
 /**
  * @brief Computes 256-bit hash with Streebog hash function.
  * Is used to compress WOTS+C public key.
- * @param hypericum Hypericum context.
+ * @param hash_algo hash context.
  * @param pk_seed public key seed, length is set by constant
  * HYPERICUM_N_BYTES.
  * @param adrs hypericum addressing structure.
@@ -88,7 +88,7 @@ void hypericum_thl(
 /**
  * @brief Computes 256-bit hash with Streebog hash function.
  * Is used to compress FORS tree's root.
- * @param hypericum Hypericum context.
+ * @param hash_algo hash context.
  * @param pk_seed public key seed, length is set by constant
  * HYPERICUM_N_BYTES.
  * @param adrs hypericum addressing structure.
@@ -105,7 +105,7 @@ void hypericum_thk(
 
 /**
  * @brief Hash a user input message.
- * @param hypericum Hypericum context.
+ * @param hash_algo hash context.
  * @param rnd pseudo-random string, output of `prf_msg()`, 32 bytes
  * @param pk_seed public key seed, length is set by constant
  * HYPERICUM_N_BYTES.
@@ -128,7 +128,7 @@ void hypericum_h_msg(
 
 /**
  * @brief Pseudo-randomly generate secret key elements from a secret seed.
- * @param hypericum Hypericum context.
+ * @param hash_algo hash context.
  * @param pk_seed public key seed, length is set by constant
  * HYPERICUM_N_BYTES.
  * @param sk_seed secret key seed, length is set by constant
@@ -146,7 +146,7 @@ void hypericum_prf(
 /**
  * @brief Generate a pseudo-random value used during original message
  * compression.
- * @param hypericum Hypericum context.
+ * @param hash_algo hash context.
  * @param sk_prf a separate prf secret key seed, length is set by constant
  * HYPERICUM_N_BYTES.
  * @param pk_seed public key seed, length is set by constant
@@ -164,4 +164,23 @@ void hypericum_prf_msg(
     const uint8_t* nonce,
     const uint8_t* msg,
     size_t msg_len,
+    uint8_t* result);
+
+/**
+ * @brief Computes 256-bit hash with Streebog hash function.
+ * Is used for selecting WOTS+C hash values.
+ * @param hash_algo hash context
+ * @param pk_seed public key seed, length is set by constant
+ * HYPERICUM_N_BYTES.
+ * @param adrs hypericum addressing structure.
+ * @param salt salt part for hashable value of size `HYPERICUM_H_NONCE_BITS`.
+ * @param m part of hashable value of size N.
+ * @param [out] result 256-bit hash result.
+ */
+void hypericum_h_select(
+    const hash_algo_t hash_algo,
+    const uint8_t* pk_seed,
+    const hypericum_adrs_t* adrs,
+    const uint8_t* salt,
+    const uint8_t* m,
     uint8_t* result);
