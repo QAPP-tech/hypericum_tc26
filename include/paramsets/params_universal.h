@@ -29,17 +29,15 @@
 #include <stdint.h>
 
 /* Height of the hypertree. */
-#define HYP_H 66
+#define HYP_H 64
 /* Hypertree layers count */
-#define HYP_D 11
+#define HYP_D 8
 /* FORS+C tree height */
-#define HYP_B 9
+#define HYP_B 14
 /* FORS+C trees count plus one */
-#define HYP_K 38
-/* Winternitz parameter */
-#define HYP_W 4
+#define HYP_K 21
 
 static uint8_t md_suffix_nonzero(const uint8_t* digest)
 {
-    return (digest[41] & 0b00000111) | (digest[42] & 0b11111100);
+    return digest[35] | (digest[36] & 0b11111100);
 }

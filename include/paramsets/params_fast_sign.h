@@ -36,8 +36,6 @@
 #define HYP_B 9
 /* FORS+C trees count plus one */
 #define HYP_K 36
-/* Winternitz parameter */
-#define HYP_W 16
 
 static uint8_t md_suffix_nonzero(const uint8_t* digest)
 {

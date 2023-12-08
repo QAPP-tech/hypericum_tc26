@@ -125,26 +125,24 @@ int chain(
  *
  * @param[in] msg Input array
  * @param[in] msg_len Size of msg in bytes
- * @param[in] w Maximum value of input array element. Can be 4, 16 or 256.
  * @param[out] out Array of packed elements. Its size should be at least
  * `msg_len * log2(w) / 8`
  * @return 0 on success, 1 on error
  */
 uint8_t convert_w_pack(
-    const uint8_t* msg, size_t msg_len, uint16_t w, uint8_t* out);
+    const uint8_t* msg, size_t msg_len, uint8_t* out);
 
 /**
  * @brief unpacks array of `log2(w)`-bit elements into provided buffer.
  *
  * @param[in] msg_packed Input array
  * @param[in] msg_len Size of msg_packed in bytes
- * @param[in] w Maximum value of input array element. Can be 4, 16 or 256.
  * @param[out] out Array of unpacked elements. Its size should be at least
  * `msg_len * 8 / log2(w)`
  * @return 0 on success, 1 on error
  */
 uint8_t convert_w_unpack(
-    const uint8_t* msg_packed, size_t msg_len, uint16_t w, uint8_t* out);
+    const uint8_t* msg_packed, size_t msg_len, uint8_t* out);
 
 /**
  * @brief Calculates base-`w` representation of given message `msg` such that

@@ -52,7 +52,7 @@ int chain(
         return 0;
     }
 
-    if (j + k > HYP_W - 1)
+    if (j + k > HYPERICUM_W - 1)
     {
         return EINVAL;
     }
@@ -67,37 +67,22 @@ int chain(
 }
 
 uint8_t convert_w_unpack(
-    const uint8_t *msg_packed, size_t msg_len, uint16_t w, uint8_t *out)
+    const uint8_t *msg_packed, size_t msg_len, uint8_t *out)
 {
     if (msg_packed == NULL || out == NULL)
     {
         return 1;
     }
 
-    uint16_t wbits;
-    switch (w)
-    {
-    case 4:
-        wbits = 2;
-        break;
-    case 16:
-        wbits = 4;
-        break;
-    case 256:
-        wbits = 8;
-        break;
-    default:
-        return 1;
-    }
-
+    uint16_t wbits = HYPERICUM_W_BITS;
     uint8_t *cur = out;
 
-    const uint16_t mask = w - 1;
+    const uint16_t mask = HYPERICUM_W - 1;
     for (size_t i = 0; i < msg_len; ++i)
     {
         for (uint16_t acc = wbits; acc <= 8; acc += wbits, ++cur)
         {
-            *cur = (msg_packed[i] >> (8 - acc)) & (w - 1);
+            *cur = (msg_packed[i] >> (8 - acc)) & mask;
         }
     }
     return 0;
@@ -130,7 +115,7 @@ int hash_convert(
         }
         hypericum_h_select(hash_algo, pk_seed, adrs, s, msg, d);
 
-        convert_w_unpack(d, HYPERICUM_N_BYTES, HYP_W, base_w);
+        convert_w_unpack(d, HYPERICUM_N_BYTES, base_w);
 
         uint32_t s_cur = 0;
         for (size_t i = 0; i < HYP_L; ++i)
@@ -191,7 +176,7 @@ int hypericum_generate_wots_pk(
     {
         hypericum_adrs_set_wots_hash_chain_address(adrs, i);
         int chain_err = chain(
-            hash_algo, pk_seed, sk_iterator, 0, HYP_W - 1, adrs, pk_iterator);
+            hash_algo, pk_seed, sk_iterator, 0, HYPERICUM_W - 1, adrs, pk_iterator);
         if (chain_err != 0)
         {
             return chain_err;
@@ -273,7 +258,7 @@ int hypericum_generate_wots_pk_from_sig(
 
     size_t base_w_size = HYP_L;
     ALLOC_ON_STACK(uint8_t, base_w, base_w_size);
-    convert_w_unpack(d, d_size, HYP_W, base_w);
+    convert_w_unpack(d, d_size, base_w);
 
     uint32_t s_actual = 0;
     for (size_t i = 0; i < base_w_size; ++i)
@@ -298,7 +283,7 @@ int hypericum_generate_wots_pk_from_sig(
         hypericum_adrs_set_wots_hash_chain_address(adrs, i);
         int err_chain = chain(
             hash_algo, pk_seed, sig_iterator, *b_iterator,
-            HYP_W - 1 - *b_iterator, adrs, pk_iterator);
+            HYPERICUM_W - 1 - *b_iterator, adrs, pk_iterator);
         if (err_chain != 0)
         {
             return 1;
