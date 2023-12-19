@@ -29,8 +29,10 @@
 #include "xmss.h"
 #include "adrs.h"
 #include "utils.h"
+#include "utils/intermediate.h"
 
 #include <string.h>
+
 
 const size_t N = HYPERICUM_N_BYTES;
 
@@ -75,7 +77,13 @@ void hypericum_sign_xmssmt(
     hypericum_xmss_sign(
         hash_algo, sk_seed, pk_seed, msg, idx_leaf, adrs, sig_tmp);
 
+    INTERMEDIATE_OUTPUT(print_sign_ht(0, sig_tmp));
+
     ALLOC_ON_STACK(uint8_t, root, N);
+
+#ifdef WITH_INTERMEDIATE_OUTPUT
+    disable_wots_pk_output();
+#endif
 
     hypericum_xmss_pk_from_sig(
         hash_algo, pk_seed, msg, sig_tmp, idx_leaf, adrs, root);
@@ -90,12 +98,17 @@ void hypericum_sign_xmssmt(
         hypericum_xmss_sign(
             hash_algo, sk_seed, pk_seed, root, idx_leaf, adrs, sig_tmp);
 
+        INTERMEDIATE_OUTPUT(print_sign_ht(j, sig_tmp));
+
         if (j < HYP_D - 1) {
             hypericum_xmss_pk_from_sig(
                 hash_algo, pk_seed, root, sig_tmp, idx_leaf, adrs, root);
         }
     }
     SECURE_ERASE(uint8_t, root, N);
+#ifdef WITH_INTERMEDIATE_OUTPUT
+    enable_wots_pk_output();
+#endif
 
     hypericum_adrs_destroy(adrs);
 }
@@ -120,12 +133,16 @@ int hypericum_verify_xmssmt(
 
     uint8_t node[HYPERICUM_N_BYTES] = { 0 };
 
+    INTERMEDIATE_OUTPUT(print_verify_layer(0));
+
     hypericum_xmss_pk_from_sig(
         hash_algo, pk_seed, msg, sig, idx_leaf, adrs, node);
+    INTERMEDIATE_OUTPUT(print_verify_xmss_pk(node));
 
     const size_t sig_tmp_len = HYP_XMSSMT_BYTES / HYP_D;
 
     for (uint32_t j = 1; j < HYP_D; j++) {
+        INTERMEDIATE_OUTPUT(print_verify_layer(j));
         idx_leaf = idx_tree % (1ull << HYP_H_PRIME);
         idx_tree = idx_tree >> HYP_H_PRIME;
         const uint8_t* sig_tmp = sig + j * sig_tmp_len;
@@ -133,7 +150,11 @@ int hypericum_verify_xmssmt(
         hypericum_adrs_set_tree_address(adrs, idx_tree);
         hypericum_xmss_pk_from_sig(
             hash_algo, pk_seed, node, sig_tmp, idx_leaf, adrs, node);
+
+        INTERMEDIATE_OUTPUT(print_verify_xmss_pk(node));
     }
+
+    INTERMEDIATE_OUTPUT(print_verify_pk_root(pk));
 
     int res = memcmp(node, pk, N);
     SECURE_ERASE(uint8_t, node, N);

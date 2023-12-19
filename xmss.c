@@ -29,10 +29,12 @@
 #include "wotsc.h"
 #include "hash.h"
 #include "utils.h"
+#include "utils/intermediate.h"
 
 #include "stack.h"
 
 #include <string.h>
+
 
 void hypericum_xmss_tree_hash(
     const hash_algo_t hash_algo,
@@ -140,6 +142,8 @@ void hypericum_xmss_pk_from_sig(
     uint8_t* auth = (uint8_t*)sig + HYP_WOTS_BYTES;
     hypericum_generate_wots_pk_from_sig(
         hash_algo, sig, msg, pk_seed, adrs, result);
+
+    INTERMEDIATE_OUTPUT(print_verify_wots_pk(result));
 
     hypericum_adrs_set_type(adrs, address_tree);
     hypericum_adrs_set_tree_index(adrs, idx);
