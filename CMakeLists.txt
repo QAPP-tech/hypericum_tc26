@@ -11,12 +11,12 @@ SET(API_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 SET(PARAMSETS_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/include/paramsets)
 SET(STREEBOG_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/streebog)
 
-SET(PARAMSET "fast_ver" CACHE STRING "Select a hypericum parameter set")
-SET_PROPERTY(CACHE PARAMSET PROPERTY STRINGS "fast_ver"
+SET(PARAMSET "universal" CACHE STRING "Select a hypericum parameter set")
+SET_PROPERTY(CACHE PARAMSET PROPERTY STRINGS "universal"
                                              "fast_sign"
                                              "small_sign")
 IF(NOT PARAMSET)
-  SET(PARAMSET "fast_ver")
+  SET(PARAMSET "universal")
 ENDIF()
 
 
@@ -35,7 +35,7 @@ ADD_SUBDIRECTORY(${STREEBOG_DIR})
 SET(HEADER_FILES ${API_HEADER_DIR}/api.h
                  ${API_HEADER_DIR}/params.h
 
-                 ${PARAMSETS_DIR}/params_fast_ver.h
+                 ${PARAMSETS_DIR}/params_universal.h
                  ${PARAMSETS_DIR}/params_fast_sign.h
                  ${PARAMSETS_DIR}/params_small_sign.h
 
