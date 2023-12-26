@@ -33,6 +33,7 @@
 #include "pack.h"
 #include "params.h"
 #include "utils.h"
+#include "utils/intermediate.h"
 
 #include <string.h>
 
@@ -61,6 +62,9 @@ int hypericum_generate_keys(uint8_t* result_sk, uint8_t* result_pk)
     }
 
     hypericum_generate_xmssmt_pk(hash_algo, sk.seed, pk.seed, pk.root);
+
+    INTERMEDIATE_OUTPUT(print_sk(&sk));
+    INTERMEDIATE_OUTPUT(print_pk(&pk));
 
     memcpy(result_sk + HYPERICUM_N_BYTES * 2, result_pk, HYP_PUBLIC_KEY_BYTES);
 
@@ -102,6 +106,8 @@ int hypericum_sign(
         hash_algo, sk.prf, sk.pk.seed, (const uint8_t*)HYPERICUM_OPT, msg,
         msg_len, sig.r);
 
+    INTERMEDIATE_OUTPUT(print_sign_randomization_parameters(&sig));
+
     const uint32_t tmp_md_size = (HYP_K * HYP_B + 7) / 8;
     const uint32_t tmp_idx_tree_size = (HYP_H - HYP_H_PRIME + 7) / 8;
 
@@ -135,6 +141,8 @@ int hypericum_sign(
         break;
     }
 
+    INTERMEDIATE_OUTPUT(print_sign_preparation_data(sig.s, digest, idx_tree, idx_leaf));
+
     hypericum_adrs_t* adrs = hypericum_adrs_create();
 
     hypericum_adrs_set_layer_address(adrs, 0);
@@ -143,6 +151,8 @@ int hypericum_sign(
     hypericum_adrs_set_keypair_address(adrs, idx_leaf);
     hypericum_sign_fors(
         hash_algo, sk.seed, sk.pk.seed, digest, adrs, sig.sig_fors);
+
+    INTERMEDIATE_OUTPUT(print_sign_fors(&sig));
 
     uint8_t pk_fors[HYPERICUM_N_BYTES];
     hypericum_generate_fors_pk_from_sig(
@@ -156,6 +166,7 @@ int hypericum_sign(
         sig.sig_ht);
 
     hash_algo_free(hash_algo);
+
     return ret;
 }
 
@@ -169,6 +180,8 @@ int hypericum_verify(
 
     hypericum_pk_internal_t pk = hypericum_pk_parse((uint8_t*)pk_bytes);
     hypericum_sig_internal_t sig = hypericum_sig_parse((uint8_t*)sig_bytes);
+
+    INTERMEDIATE_OUTPUT(print_verify_parsed_signature(&sig));
 
     uint8_t digest[64];
     hypericum_h_msg(
@@ -189,6 +202,8 @@ int hypericum_verify(
     uint32_t idx_leaf = be_to_u32(tmp_idx_leaf);
     idx_leaf >>= (32 - HYP_H_PRIME);
 
+    INTERMEDIATE_OUTPUT(print_verify_hash_data(digest, idx_tree, idx_leaf));
+
     hypericum_adrs_t* adrs = hypericum_adrs_create();
     hypericum_adrs_set_layer_address(adrs, 0);
     hypericum_adrs_set_tree_address(adrs, idx_tree);
@@ -198,6 +213,8 @@ int hypericum_verify(
     uint8_t pk_fors[HYPERICUM_N_BYTES];
     hypericum_generate_fors_pk_from_sig(
         hash_algo, pk.seed, digest, sig.sig_fors, adrs, pk_fors);
+
+    INTERMEDIATE_OUTPUT(print_verify_pk_fors(pk_fors));
 
     hypericum_adrs_set_type(adrs, address_tree);
     hypericum_adrs_destroy(adrs);

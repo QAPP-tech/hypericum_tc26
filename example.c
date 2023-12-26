@@ -25,28 +25,44 @@
 */
 
 #include "api.h"
+#include "pack.h"
+#include "utils/intermediate.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(int argc, char* argv[])
 {
-    unsigned char msg[] = "Hypericum";
+    unsigned char msg[] = "Example of Hypericum signature for parameter set " PARAMSET_NAME;
     unsigned long long mlen = sizeof(msg);
 
     unsigned char pk[CRYPTO_PUBLICKEYBYTES], sk[CRYPTO_SECRETKEYBYTES];
 
+
+    printf("Digital signature algorithm: Hypericum\n");
+    printf("Hash algorithm: Streebog-512 (GOST R 34.11-2012)\n");
+    printf("Message to sign: %s\n", msg);
+    printf("================================================================================\n");
+    printf("Parameter set: %s\n", PARAMSET_NAME);
+    printf("Parameter h: %d\n", HYP_H);
+    printf("Parameter d: %d\n", HYP_D);
+    printf("Parameter b: %d\n", HYP_B);
+    printf("Parameter k: %d\n", HYP_K);
+    printf("Parameter w: %d\n", HYPERICUM_W);
+    printf("opt_const: %s\n", HYPERICUM_OPT);
+    printf("================================================================================\n");
     int ret;
-
     // private (or secret, sk) and public (pk) key pair generation.
-
     ret = crypto_sign_keypair(pk, sk);
     if (ret != 0) {
         printf("Error generating hypericum key pair\n");
         return ret;
     }
+#ifdef WITH_INTERMEDIATE_OUTPUT
+    printf("================================================================================\n");
+#else
     printf("Hypericum key pair generated\n");
-
+#endif
     // message signing. Private key is used for this operation.
 
     unsigned char* sm = calloc(CRYPTO_BYTES + mlen, sizeof(unsigned char));
@@ -56,14 +72,20 @@ int main(int argc, char* argv[])
         printf("Error signing message\n");
         return ret;
     }
+#ifdef WITH_INTERMEDIATE_OUTPUT
+    printf("===================================================\n");
+#else
     printf("Hypericum Message signed\n");
-
+#endif
     // signature verification. Public key is used for this
     // operation. Result will be 0 if signature correct.
 
     unsigned char* msg1 = calloc(mlen, sizeof(unsigned char));
     unsigned long long mlen1;
     ret = crypto_sign_open(msg1, &mlen1, sm, smlen, pk);
+#ifdef WITH_INTERMEDIATE_OUTPUT
+    printf("================================================================================\n");
+#endif
 
     if (!ret) {
         printf("Hypericum Signature is valid. Result is %d\n", ret);
