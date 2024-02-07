@@ -143,7 +143,7 @@ int hypericum_generate_wots_sk(
     for (int i = 0; i < HYP_L; ++i, sk_iterator += HYPERICUM_N_BYTES)
     {
         hypericum_adrs_set_keygen_wots_chain_address(adrs, i);
-        hypericum_prf(hash_algo, sk_seed, pk_seed, adrs, sk_iterator);
+        hypericum_prf(hash_algo, pk_seed, sk_seed, adrs, sk_iterator);
     }
 
     return 0;
