@@ -138,8 +138,8 @@ void hypericum_h_msg(
  */
 void hypericum_prf(
     const hash_algo_t hash_algo,
-    const uint8_t* pk_seed,
     const uint8_t* sk_seed,
+    const uint8_t* pk_seed,
     const hypericum_adrs_t* adrs,
     uint8_t* result);
 

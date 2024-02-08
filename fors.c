@@ -46,7 +46,7 @@ void hypericum_generate_fors_sk(
     hypericum_adrs_set_type(adrs, address_fors_tree);
     hypericum_adrs_set_fors_tree_height(adrs, 0);
     hypericum_adrs_set_fors_tree_index(adrs, idx);
-    hypericum_prf(hash_algo, pk_seed, sk_seed, adrs, result);
+    hypericum_prf(hash_algo, sk_seed, pk_seed, adrs, result);
 }
 
 // 'sk_seed' len: n
