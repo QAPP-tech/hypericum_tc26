@@ -1,5 +1,5 @@
 Digital signature algorithm: Hypericum
-Hash algorithm: Streebog-512 (GOST R 34.11-2012)
+Hash algorithm: Streebog-256 (GOST R 34.11-2012)
 Message to sign: Example of Hypericum signature for parameter set small_sign
 ================================================================================
 Parameter set: small_sign
