@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
 
     printf("Digital signature algorithm: Hypericum\n");
-    printf("Hash algorithm: Streebog-512 (GOST R 34.11-2012)\n");
+    printf("Hash algorithm: Streebog-256 (GOST R 34.11-2012)\n");
     printf("Message to sign: %s\n", msg);
     printf("================================================================================\n");
     printf("Parameter set: %s\n", PARAMSET_NAME);
