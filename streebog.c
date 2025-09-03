@@ -87,6 +87,21 @@ void gost256_init(hash_function_ctx_t ctx)
     GOST34112012Init(ctx, 256);
 }
 
+void gost512(const uint8_t* buf, size_t len, uint8_t* result)
+{
+    streebog_digest_f(buf, len, result, 512);
+}
+
+hash_function_ctx_t gost512_create(void)
+{
+    return gost_create(512);
+}
+
+void gost512_init(hash_function_ctx_t ctx)
+{
+    GOST34112012Init(ctx, 512);
+}
+
 void gost_update(hash_function_ctx_t ctx, const uint8_t* msg, size_t len)
 {
     GOST34112012Update((GOST34112012Context*)ctx, msg, len);
@@ -97,7 +112,7 @@ void gost_final(hash_function_ctx_t ctx, uint8_t* out)
     GOST34112012Final((GOST34112012Context*)ctx, out);
 }
 
-hash_algo_t hash_algo_new()
+hash_algo_t hash_algo_new_gost256()
 {
     hash_algo_t hash_ctx = (hash_algo_t)calloc(1, sizeof(struct hash_algo_st));
     if (NULL == hash_ctx) {
@@ -116,7 +131,27 @@ hash_algo_t hash_algo_new()
     return hash_ctx;
 }
 
+hash_algo_t hash_algo_new_gost512()
+{
+    hash_algo_t hash_ctx = (hash_algo_t)calloc(1, sizeof(struct hash_algo_st));
+    if (NULL == hash_ctx) {
+        return NULL;
+    }
+
+    hash_ctx->hash = gost512;
+    hash_ctx->block_size = 128;
+    hash_ctx->output_size = 64;
+    hash_ctx->ctx_new = gost512_create;
+    hash_ctx->ctx_init = gost512_init;
+    hash_ctx->ctx_update = gost_update;
+    hash_ctx->ctx_final = gost_final;
+    hash_ctx->ctx_free = gost_free;
+
+    return hash_ctx;
+}
+
 void hash_algo_free(hash_algo_t hash_algo)
 {
     free(hash_algo);
 }
+

@@ -137,7 +137,12 @@ typedef struct hash_algo_st* hash_algo_t;
 /**
  * @return Hashing algorithm instance or `NULL` if out of memory
  */
-hash_algo_t hash_algo_new();
+hash_algo_t hash_algo_new_gost256();
+
+/**
+ * @return Hashing algorithm instance or `NULL` if out of memory
+ */
+hash_algo_t hash_algo_new_gost512();
 
 void hash_algo_free(hash_algo_t hash_algo);
 

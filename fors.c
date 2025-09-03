@@ -207,15 +207,12 @@ void hypericum_generate_fors_pk_from_sig(
         for (uint32_t j = 0; j < HYP_B; j++) {
             const uint8_t* auth = sig;
             hypericum_adrs_set_fors_tree_height(adrs, j + 1);
+            hypericum_adrs_set_fors_tree_index(
+                    adrs, hypericum_adrs_get_fors_tree_index(adrs) >> 1);
             if ((idx / (1u << j)) % 2 == 0) {
-                hypericum_adrs_set_fors_tree_index(
-                    adrs, hypericum_adrs_get_fors_tree_index(adrs) / 2);
-
                 hypericum_h_node(
                     hash_algo, pk_seed, adrs, roots_ptr, auth, roots_ptr);
             } else {
-                hypericum_adrs_set_fors_tree_index(
-                    adrs, (hypericum_adrs_get_fors_tree_index(adrs) - 1) / 2);
                 hypericum_h_node(
                     hash_algo, pk_seed, adrs, auth, roots_ptr, roots_ptr);
             }
@@ -226,6 +223,7 @@ void hypericum_generate_fors_pk_from_sig(
     SECURE_ERASE(uint32_t, indices, HYP_K_HATCH);
 
     hypericum_adrs_set_type(adrs, address_fors_roots);
+    hypericum_adrs_set_suffix(adrs, 0);
     hypericum_thk(hash_algo, pk_seed, adrs, roots, result);
 
     SECURE_ERASE(uint8_t, roots, HYP_K_HATCH * HYPERICUM_N_BYTES);

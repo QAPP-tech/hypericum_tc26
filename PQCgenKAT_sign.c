@@ -34,6 +34,7 @@ protection within the United States.
 #include <ctype.h>
 #include "api.h"
 #include "drbg.h"
+#include "streebog.h"
 
 #define MAX_MARKER_LEN 50
 
@@ -78,7 +79,7 @@ int main()
     for (int i = 0; i < DRBG_INIT_BYTES_LEN; i++)
         entropy_input[i] = i;
 
-    const hash_algo_t hash_algo = hash_algo_new();
+    const hash_algo_t hash_algo = hash_algo_new_gost256();
 
     randombytes_init(entropy_input);
     for (int i = 0; i < 100; i++) {

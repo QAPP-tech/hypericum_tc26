@@ -55,13 +55,14 @@ void hypericum_xmss_tree_hash(
         hypericum_generate_wots_pk(hash_algo, sk_seed, pk_seed, adrs, node->pk);
 
         hypericum_adrs_set_type(adrs, address_tree);
+        hypericum_adrs_set_keypair_address(adrs, 0);
         hypericum_adrs_set_tree_height(adrs, 1);
         hypericum_adrs_set_tree_index(adrs, start_index + i);
 
         while (!stack_is_empty(stack_root_node) &&
                ((struct Node*)stack_peek(stack_root_node))->h == node_h) {
             hypericum_adrs_set_tree_index(
-                adrs, (hypericum_adrs_get_tree_index(adrs) - 1) >> 1);
+                adrs, hypericum_adrs_get_tree_index(adrs) >> 1);
 
             struct Node* top_stack_node =
                 (struct Node*)stack_pop(&stack_root_node);
@@ -146,18 +147,17 @@ void hypericum_xmss_pk_from_sig(
     INTERMEDIATE_OUTPUT(print_verify_wots_pk(result));
 
     hypericum_adrs_set_type(adrs, address_tree);
+    hypericum_adrs_set_keypair_address(adrs, 0);
     hypericum_adrs_set_tree_index(adrs, idx);
     for (uint32_t k = 0; k < HYP_H_PRIME; k++) {
         hypericum_adrs_set_tree_height(adrs, k + 1);
+        hypericum_adrs_set_tree_index(
+            adrs, hypericum_adrs_get_tree_index(adrs) >> 1);
         if ((idx >> k) % 2 == 0) {
-            hypericum_adrs_set_tree_index(
-                adrs, hypericum_adrs_get_tree_index(adrs) >> 1);
             hypericum_h_node(
                 hash_algo, pk_seed, adrs, result, auth + k * HYPERICUM_N_BYTES,
                 result);
         } else {
-            hypericum_adrs_set_tree_index(
-                adrs, (hypericum_adrs_get_tree_index(adrs) - 1) >> 1);
             hypericum_h_node(
                 hash_algo, pk_seed, adrs, auth + k * HYPERICUM_N_BYTES, result,
                 result);

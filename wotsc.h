@@ -120,29 +120,17 @@ int chain(
     hypericum_adrs_t* adrs,
     uint8_t* element);
 
-/**
- * @brief packs array elements with maximum value `w` into provided buffer.
- *
- * @param[in] msg Input array
- * @param[in] msg_len Size of msg in bytes
- * @param[out] out Array of packed elements. Its size should be at least
- * `msg_len * log2(w) / 8`
- * @return 0 on success, 1 on error
- */
-uint8_t convert_w_pack(
-    const uint8_t* msg, size_t msg_len, uint8_t* out);
 
 /**
  * @brief unpacks array of `log2(w)`-bit elements into provided buffer.
  *
- * @param[in] msg_packed Input array
- * @param[in] msg_len Size of msg_packed in bytes
+ * @param[in] msg_packed Input array, `HYPERICUM_N_BYTES` bytes
  * @param[out] out Array of unpacked elements. Its size should be at least
- * `msg_len * 8 / log2(w)`
+ * `HYPERICUM_N_BYTES * 8 / log2(w)`
  * @return 0 on success, 1 on error
  */
 uint8_t convert_w_unpack(
-    const uint8_t* msg_packed, size_t msg_len, uint8_t* out);
+    const uint8_t* msg_packed, uint8_t* out);
 
 /**
  * @brief Calculates base-`w` representation of given message `msg` such that
@@ -152,7 +140,6 @@ uint8_t convert_w_unpack(
  * @param[in] pk_seed Public key seed (32 bytes)
  * @param[in] adrs Hypericum ADRS address
  * @param[in] msg Input message. Its size is `n` bytes.
- * @param[in] msg_len Input message length
  * @param[in] s_wn Target complexity
  * @param[out] base_w Unpacked streebog hash of (pk_seed, adrs, s, msg). `l`
  * bytes

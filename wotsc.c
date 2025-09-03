@@ -25,6 +25,7 @@
 */
 
 #include "wotsc.h"
+#include "include/params.h"
 #include "streebog.h"
 #include "drbg.h"
 #include "params.h"
@@ -67,22 +68,23 @@ int chain(
 }
 
 uint8_t convert_w_unpack(
-    const uint8_t *msg_packed, size_t msg_len, uint8_t *out)
+    const uint8_t *msg_packed, uint8_t *out)
 {
     if (msg_packed == NULL || out == NULL)
     {
         return 1;
     }
 
-    uint16_t wbits = HYPERICUM_W_BITS;
+    const uint16_t BYTE_BITS = 8;
+    const uint16_t wbits = HYPERICUM_W_BITS;
     uint8_t *cur = out;
 
     const uint16_t mask = HYPERICUM_W - 1;
-    for (size_t i = 0; i < msg_len; ++i)
+    for (size_t i = 0; i < HYPERICUM_N_BYTES; ++i)
     {
-        for (uint16_t acc = wbits; acc <= 8; acc += wbits, ++cur)
+        for (uint16_t acc = wbits; acc <= BYTE_BITS; acc += wbits, ++cur)
         {
-            *cur = (msg_packed[i] >> (8 - acc)) & mask;
+            *cur = (msg_packed[i] >> (BYTE_BITS - acc)) & mask;
         }
     }
     return 0;
@@ -102,20 +104,16 @@ int hash_convert(
     hypericum_adrs_set_type(adrs, address_sign_msg_wots);
     hypericum_adrs_set_suffix(adrs, 0);
 
-    size_t msg_bytes = HYPERICUM_N_BYTES;
+    const size_t msg_bytes = HYPERICUM_N_BYTES;
+    ALLOC_ON_STACK(uint8_t, d, msg_bytes);
 
-    ALLOC_ON_STACK(uint8_t, d, HYPERICUM_N_BYTES);
-    uint8_t adrs_bytes[HYPERICUM_ADRS_SIZE_BYTES];
-
+    uint32_t s_new = 0;
     for (uint32_t i = 0; i < HYPERICUM_MAX_ITERATIONS; ++i)
     {
-        if ((ret = randombytes(hash_algo, s, HYPERICUM_H_NONCE_BYTES)) != 0)
-        {
-            return ret;
-        }
+        fill_bytes32(s, s_new);
         hypericum_h_select(hash_algo, pk_seed, adrs, s, msg, d);
 
-        convert_w_unpack(d, HYPERICUM_N_BYTES, base_w);
+        convert_w_unpack(d, base_w);
 
         uint32_t s_cur = 0;
         for (size_t i = 0; i < HYP_L; ++i)
@@ -126,6 +124,7 @@ int hash_convert(
         {
             break;
         }
+        s_new++;
     }
     return ret;
 }
@@ -138,6 +137,7 @@ int hypericum_generate_wots_sk(
     uint8_t *result_sk)
 {
     hypericum_adrs_set_type(adrs, address_keygen_wots);
+    hypericum_adrs_set_suffix(adrs, 0); // sets chain; element is always zero
 
     uint8_t *sk_iterator = result_sk;
     for (int i = 0; i < HYP_L; ++i, sk_iterator += HYPERICUM_N_BYTES)
@@ -184,6 +184,7 @@ int hypericum_generate_wots_pk(
     }
 
     hypericum_adrs_set_type(adrs, address_wots_pk);
+    hypericum_adrs_set_suffix(adrs, 0);
     hypericum_thl(hash_algo, pk_seed, adrs, pk_tmp, result_pk);
     return 0;
 }
@@ -196,7 +197,7 @@ int hypericum_sign_wots(
     hypericum_adrs_t *adrs,
     uint8_t *result_sig)
 {
-    size_t base_w_size = HYP_L;
+    const size_t base_w_size = HYP_L;
     ALLOC_ON_STACK(uint8_t, base_w, base_w_size);
 
     int ret = 0;
@@ -208,7 +209,7 @@ int hypericum_sign_wots(
         return ret;
     }
 
-    size_t sk_size = HYPERICUM_N_BYTES * HYP_L;
+    const size_t sk_size = HYPERICUM_N_BYTES * HYP_L;
     ALLOC_ON_STACK(uint8_t, sk, sk_size);
     int err_sk =
         hypericum_generate_wots_sk(hash_algo, sk_seed, pk_seed, adrs, sk);
@@ -251,17 +252,17 @@ int hypericum_generate_wots_pk_from_sig(
     hypericum_adrs_set_type(adrs, address_sign_msg_wots);
     hypericum_adrs_set_suffix(adrs, 0);
 
-    size_t d_size = HYPERICUM_N_BYTES;
+    const size_t d_size = HYPERICUM_N_BYTES;
     ALLOC_ON_STACK(uint8_t, d, d_size);
 
     hypericum_h_select(hash_algo, pk_seed, adrs, s, msg, d);
 
-    size_t base_w_size = HYP_L;
+    const size_t base_w_size = HYP_L;
     ALLOC_ON_STACK(uint8_t, base_w, base_w_size);
-    convert_w_unpack(d, d_size, base_w);
+    convert_w_unpack(d, base_w);
 
     uint32_t s_actual = 0;
-    for (size_t i = 0; i < base_w_size; ++i)
+    for (size_t i = 0; i < HYP_L; ++i)
     {
         s_actual += base_w[i];
     }
@@ -272,7 +273,7 @@ int hypericum_generate_wots_pk_from_sig(
     }
 
     hypericum_adrs_set_type(adrs, address_wots_hash);
-    size_t pk_tmp_size = HYP_L * HYPERICUM_N_BYTES;
+    const size_t pk_tmp_size = HYP_L * HYPERICUM_N_BYTES;
     ALLOC_ON_STACK(uint8_t, pk_tmp, pk_tmp_size);
     const uint8_t *sig_iterator = sig;
     const uint8_t *b_iterator = base_w;
