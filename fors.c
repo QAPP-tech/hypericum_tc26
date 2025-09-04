@@ -80,7 +80,7 @@ void hypericum_fors_tree_hash(
         while (!stack_is_empty(stack_root_node) &&
                ((struct Node*)stack_peek(stack_root_node))->h == node_h) {
             hypericum_adrs_set_fors_tree_index(
-                adrs, (hypericum_adrs_get_fors_tree_index(adrs) - 1) / 2);
+                adrs, hypericum_adrs_get_fors_tree_index(adrs) >> 1);
 
             struct Node* top_stack_node =
                 (struct Node*)stack_pop(&stack_root_node);
