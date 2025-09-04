@@ -60,7 +60,9 @@ static inline void _th(
     hash_algo->ctx_update(ctx, zeros, sizeof(zeros));
     hash_algo->ctx_update(ctx, adrs_bytes, HYPERICUM_ADRS_SIZE_BYTES);
     hash_algo->ctx_update(ctx, msg1, msg1_bytes);
-    hash_algo->ctx_update(ctx, msg2, msg2_bytes);
+    if (msg2 != NULL) { // providing NULL as src to memcpy is UB
+        hash_algo->ctx_update(ctx, msg2, msg2_bytes);
+    }
 
     hash_algo->ctx_final(ctx, result);
     hash_algo->ctx_free(ctx);
