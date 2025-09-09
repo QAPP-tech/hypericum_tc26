@@ -30,8 +30,8 @@
 
 #include <stdint.h>
 
-#define HYPERICUM_N_BYTES 32
-#define HYPERICUM_N_BITS (HYPERICUM_N_BYTES * 8)
+#define HYPERICUM_N_BITS 256
+#define HYPERICUM_N_BYTES HYPERICUM_N_BITS / 8
 #define HYPERICUM_H_NONCE_BYTES 4
 #define HYPERICUM_H_NONCE_BITS (HYPERICUM_H_NONCE_BYTES * 8)
 // Winternitz parameter
@@ -43,10 +43,10 @@
 
 #define HYPERICUM_OPT \
     "5475726368656e6b6f7c4b5544494e4f567c477265626e65767c514150500d0a"
+#define HYP_L 64
 
 /* derived parameters */
 
-#define HYP_L (HYPERICUM_N_BITS / HYPERICUM_W_BITS)
 #define HYP_K_HATCH (HYP_K - 1)
 #define HYP_H_PRIME (HYP_H / HYP_D)
 #define HYP_S_WN ((HYPERICUM_W - 1) * HYP_L >> 1)

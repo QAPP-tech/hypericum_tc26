@@ -40,7 +40,7 @@
 
 int hypericum_generate_keys(uint8_t* result_sk, uint8_t* result_pk)
 {
-    const hash_algo_t hash_algo = hash_algo_new();
+    const hash_algo_t hash_algo = hash_algo_new_gost256();
 
     hypericum_pk_internal_t pk = hypericum_pk_parse(result_pk);
     hypericum_sk_internal_t sk = hypericum_sk_parse(result_sk);
@@ -97,7 +97,8 @@ int hypericum_sign(
     uint8_t* result_sig)
 {
     int ret = 0;
-    const hash_algo_t hash_algo = hash_algo_new();
+    const hash_algo_t hash_algo = hash_algo_new_gost256();
+    const hash_algo_t hash_algo_512 = hash_algo_new_gost512();
 
     hypericum_sk_internal_t sk = hypericum_sk_parse((uint8_t*)sk_bytes);
     hypericum_sig_internal_t sig = hypericum_sig_parse(result_sig);
@@ -119,11 +120,12 @@ int hypericum_sign(
     for (uint32_t i = 0; i < HYPERICUM_SIGN_MAX_ITERATIONS; ++i) {
         if ((ret = randombytes(hash_algo, sig.s, sizeof(uint32_t))) != 0) {
             hash_algo_free(hash_algo);
+            hash_algo_free(hash_algo_512);
             return ret;
         }
 
         hypericum_h_msg(
-            hash_algo, sig.r, sk.pk.seed, sk.pk.root, sig.s, msg, msg_len,
+            hash_algo_512, sig.r, sk.pk.seed, sk.pk.root, sig.s, msg, msg_len,
             digest);
 
         if (md_suffix_nonzero(digest)) {
@@ -140,6 +142,7 @@ int hypericum_sign(
         idx_leaf >>= (32 - HYP_H_PRIME);
         break;
     }
+    hash_algo_free(hash_algo_512);
 
     INTERMEDIATE_OUTPUT(print_sign_preparation_data(sig.s, digest, idx_tree, idx_leaf));
 
@@ -158,7 +161,6 @@ int hypericum_sign(
     hypericum_generate_fors_pk_from_sig(
         hash_algo, sk.pk.seed, digest, sig.sig_fors, adrs, pk_fors);
 
-    hypericum_adrs_set_type(adrs, address_tree);
     hypericum_adrs_destroy(adrs);
     secure_erase(digest, 64);
     hypericum_sign_xmssmt(
@@ -176,7 +178,8 @@ int hypericum_verify(
     const uint8_t* msg,
     size_t msg_len)
 {
-    const hash_algo_t hash_algo = hash_algo_new();
+    const hash_algo_t hash_algo = hash_algo_new_gost256();
+    const hash_algo_t hash_algo_512 = hash_algo_new_gost512();
 
     hypericum_pk_internal_t pk = hypericum_pk_parse((uint8_t*)pk_bytes);
     hypericum_sig_internal_t sig = hypericum_sig_parse((uint8_t*)sig_bytes);
@@ -185,7 +188,8 @@ int hypericum_verify(
 
     uint8_t digest[64];
     hypericum_h_msg(
-        hash_algo, sig.r, pk.seed, pk.root, sig.s, msg, msg_len, digest);
+        hash_algo_512, sig.r, pk.seed, pk.root, sig.s, msg, msg_len, digest);
+    hash_algo_free(hash_algo_512);
     if (md_suffix_nonzero(digest)) {
         hash_algo_free(hash_algo);
         return 1;
@@ -216,7 +220,6 @@ int hypericum_verify(
 
     INTERMEDIATE_OUTPUT(print_verify_pk_fors(pk_fors));
 
-    hypericum_adrs_set_type(adrs, address_tree);
     hypericum_adrs_destroy(adrs);
     int ret = 1 - hypericum_verify_xmssmt(
                       hash_algo, pk.seed, sig.sig_ht, pk_fors, idx_tree,

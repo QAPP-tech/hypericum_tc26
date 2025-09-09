@@ -56,8 +56,8 @@ void hypericum_f(
  * @param pk_seed public key seed, length is set by constant
  * HYPERICUM_N_BYTES.
  * @param adrs hypericum addressing structure.
- * @param salt salt part for hashable value of size N.
- * @param m part of hashable value of size N.
+ * @param salt salt or M1 part for hashable value of size N.
+ * @param m or M2 part of hashable value of size N.
  * @param [out] result 256-bit hash result.
  */
 void hypericum_h_node(

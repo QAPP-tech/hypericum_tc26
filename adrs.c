@@ -266,7 +266,7 @@ void hypericum_adrs_set_suffix(hypericum_adrs_t* adrs, uint64_t suffix)
         case address_fors_roots:
             break;
         case address_keygen_wots:
-            adrs->data.keygen_wots.chain_address = suffix;
+            adrs->data.keygen_wots.chain_address = suffix >> 32;
             break;
         case address_keygen_fors:
             adrs->data.keygen_fors.tree_height = suffix >> 32;
