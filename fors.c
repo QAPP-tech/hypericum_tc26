@@ -68,6 +68,7 @@ void hypericum_fors_tree_hash(
     for (uint32_t i = 0; i < (1u << target_node_h); i++) {
         hypericum_generate_fors_sk(
             hash_algo, sk_seed, pk_seed, start_index + i, adrs, sk);
+        hypericum_adrs_set_type(adrs, address_fors_tree);
 
         uint32_t node_h = 0;
         struct Node* node = hypericum_create_node(node_h);
