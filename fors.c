@@ -43,7 +43,7 @@ void hypericum_generate_fors_sk(
     hypericum_adrs_t* adrs,
     uint8_t* result)
 {
-    hypericum_adrs_set_type(adrs, address_fors_tree);
+    hypericum_adrs_set_type(adrs, address_keygen_fors);
     hypericum_adrs_set_fors_tree_height(adrs, 0);
     hypericum_adrs_set_fors_tree_index(adrs, idx);
     hypericum_prf(hash_algo, sk_seed, pk_seed, adrs, result);
