@@ -31,6 +31,7 @@
 #include "stack.h"
 #include "utils.h"
 
+#include <assert.h>
 #include <string.h>
 
 // 'sk_seed' len: n
@@ -61,6 +62,7 @@ void hypericum_fors_tree_hash(
     hypericum_adrs_t* adrs,
     uint8_t* result)
 {
+    assert((start_index & ((1u << target_node_h) - 1)) == 0);
     stack_root_t* stack_root_node = NULL;
 
     uint8_t sk[HYPERICUM_N_BYTES];
