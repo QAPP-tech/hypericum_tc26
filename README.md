@@ -8,9 +8,12 @@
 
 Для сборки проекта используется cmake. Поддерживаются следующие опции:
 - `PARAMSET`. Задает набор параметров Hypericum. Возможные значения:
-  - `universal`
-  - `fast_sign`
-  - `small_sign`
+  - `Б_256_64`
+  - `М_256_64`
+  - `Б_256_20`
+  - `М_256_20`
+  - `Б_128_20`
+  - `М_128_20`
 - SHOW_INTERMEDIATE_OUTPUT. Указывает, нужно ли выводить результаты промежуточных вычислений. Принимает значения `ON` или `OFF`
 - `GOST_OPTIMIZATION`. Задает уровень оптимизации хэша `GOST 34.11-2012`, используемого в алгоритме. Различные уровни оптимизаций могут поддерживаться не на всех платформах.
   - `0` нет оптимизации
@@ -27,7 +30,7 @@
 ```bash
 $ mkdir build
 $ cd build
-$ cmake -DPARAMSET=universal -DGOST_OPTIMIZATION=1 -DSANITIZE_ADDRESS=on ..
+$ cmake -DPARAMSET=b_256_64 -DGOST_OPTIMIZATION=1 -DSANITIZE_ADDRESS=on ..
 $ make
 ```
 
@@ -42,7 +45,7 @@ $ make
 ```
 mkdir build
 cd build
-cmake -DSHOW_INTERMEDIATE_OUTPUT=ON -DPARAMSET=universal ..
+cmake -DSHOW_INTERMEDIATE_OUTPUT=ON -DPARAMSET=b_256_64 ..
 make
 ./hypericum_example
 ```

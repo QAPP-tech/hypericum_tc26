@@ -14,12 +14,15 @@ SET(PARAMSETS_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/include/paramsets)
 SET(STREEBOG_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/streebog)
 SET(UTILS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/utils)
 
-SET(PARAMSET "universal" CACHE STRING "Select a hypericum parameter set")
-SET_PROPERTY(CACHE PARAMSET PROPERTY STRINGS "universal"
-                                             "fast_sign"
-                                             "small_sign")
+SET(PARAMSET "b_256_64" CACHE STRING "Select a hypericum parameter set")
+SET_PROPERTY(CACHE PARAMSET PROPERTY STRINGS "b_256_64"
+                                             "m_256_64"
+                                             "b_256_20"
+                                             "m_256_20"
+                                             "b_128_20"
+                                             "m_128_20")
 IF(NOT PARAMSET)
-  SET(PARAMSET "universal")
+  SET(PARAMSET "b_256_64")
 ENDIF()
 
 
@@ -38,9 +41,14 @@ ADD_SUBDIRECTORY(${STREEBOG_DIR})
 SET(HEADER_FILES ${API_HEADER_DIR}/api.h
                  ${API_HEADER_DIR}/params.h
 
-                 ${PARAMSETS_DIR}/params_universal.h
-                 ${PARAMSETS_DIR}/params_fast_sign.h
-                 ${PARAMSETS_DIR}/params_small_sign.h
+                 ${PARAMSETS_DIR}/params_b_256_64.h
+                 ${PARAMSETS_DIR}/params_m_256_64.h
+
+                 ${PARAMSETS_DIR}/params_b_256_20.h
+                 ${PARAMSETS_DIR}/params_m_256_20.h
+
+                 ${PARAMSETS_DIR}/params_b_128_20.h
+                 ${PARAMSETS_DIR}/params_m_128_20.h
 
                  sei.h
                  sei_cryptoapi.h
