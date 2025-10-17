@@ -61,3 +61,7 @@ struct Node
 struct Node* hypericum_create_node(uint32_t h);
 
 void fill_bytes32(uint8_t* bytes, uint32_t value);
+
+uint32_t fill_uint32(const uint8_t* bytes);
+
+uint64_t fill_uint64(const uint8_t* bytes);

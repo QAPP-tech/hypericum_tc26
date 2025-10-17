@@ -72,24 +72,6 @@ int hypericum_generate_keys(uint8_t* result_sk, uint8_t* result_pk)
     return ret;
 }
 
-static uint32_t be_to_u32(uint8_t* a)
-{
-    uint32_t ret = a[0];
-    for (uint8_t i = 1; i < 4; ++i) {
-        ret = (ret << 8) | a[i];
-    }
-    return ret;
-}
-
-static uint64_t be_to_u64(uint8_t* a)
-{
-    uint64_t ret = a[0];
-    for (uint8_t i = 1; i < 8; ++i) {
-        ret = (ret << 8) | a[i];
-    }
-    return ret;
-}
-
 int hypericum_sign(
     const uint8_t* sk_bytes,
     const uint8_t* msg,
@@ -134,11 +116,11 @@ int hypericum_sign(
         s_found = 1;
 
         uint8_t* tmp_idx_tree = digest + tmp_md_size;
-        idx_tree = be_to_u64(tmp_idx_tree);
+        idx_tree = fill_uint64(tmp_idx_tree);
         idx_tree >>= (64 - HYP_H + HYP_H_PRIME);
 
         uint8_t* tmp_idx_leaf = tmp_idx_tree + tmp_idx_tree_size;
-        idx_leaf = be_to_u32(tmp_idx_leaf);
+        idx_leaf = fill_uint32(tmp_idx_leaf);
         idx_leaf >>= (32 - HYP_H_PRIME);
         break;
     }
@@ -203,11 +185,11 @@ int hypericum_verify(
     const uint32_t tmp_idx_tree_size = (HYP_H - HYP_H_PRIME + 7) / 8;
 
     uint8_t* tmp_idx_tree = digest + tmp_md_size;
-    uint64_t idx_tree = be_to_u64(tmp_idx_tree);
+    uint64_t idx_tree = fill_uint64(tmp_idx_tree);
     idx_tree >>= (64 - HYP_H + HYP_H_PRIME);
 
     uint8_t* tmp_idx_leaf = tmp_idx_tree + tmp_idx_tree_size;
-    uint32_t idx_leaf = be_to_u32(tmp_idx_leaf);
+    uint32_t idx_leaf = fill_uint32(tmp_idx_leaf);
     idx_leaf >>= (32 - HYP_H_PRIME);
 
     INTERMEDIATE_OUTPUT(print_verify_hash_data(digest, idx_tree, idx_leaf));
