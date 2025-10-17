@@ -143,6 +143,10 @@ int hypericum_sign(
         break;
     }
     hash_algo_free(hash_algo_512);
+    if (s_found != 1) {
+        hash_algo_free(hash_algo);
+        return 1;
+    }
 
     INTERMEDIATE_OUTPUT(print_sign_preparation_data(sig.s, digest, idx_tree, idx_leaf));
 
