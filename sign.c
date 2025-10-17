@@ -100,11 +100,7 @@ int hypericum_sign(
     uint8_t s_found = 0;
 
     for (uint32_t i = 0; i < HYPERICUM_SIGN_MAX_ITERATIONS; ++i) {
-        if ((ret = randombytes(hash_algo, sig.s, sizeof(uint32_t))) != 0) {
-            hash_algo_free(hash_algo);
-            hash_algo_free(hash_algo_512);
-            return ret;
-        }
+        fill_bytes32(sig.s, i);
 
         hypericum_h_msg(
             hash_algo_512, sig.r, sk.pk.seed, sk.pk.root, sig.s, msg, msg_len,
