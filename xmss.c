@@ -34,6 +34,7 @@
 #include "stack.h"
 
 #include <string.h>
+#include <assert.h>
 
 
 void hypericum_xmss_tree_hash(
@@ -45,6 +46,8 @@ void hypericum_xmss_tree_hash(
     hypericum_adrs_t* adrs,
     uint8_t* result)
 {
+    assert((start_index & ((1u << target_node_h) - 1)) == 0);
+
     stack_root_t* stack_root_node = NULL;
     for (uint32_t i = 0; i < (1u << target_node_h); i++) {
         hypericum_adrs_set_keypair_address(adrs, start_index + i);

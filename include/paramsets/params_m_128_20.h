@@ -4,13 +4,13 @@
    Copyright (c) 2023, QApp. All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met: 
+   modification, are permitted provided that the following conditions are met:
 
    1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer. 
+   list of conditions and the following disclaimer.
    2. Redistributions in binary form must reproduce the above copyright notice,
    this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution. 
+   and/or other materials provided with the distribution.
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,42 +26,19 @@
 
 #pragma once
 
-#include <limits.h>
-#include <stddef.h>
 #include <stdint.h>
-#include <errno.h>
-#include <stdlib.h>
 
-#include "params.h"
+/* Height of the hypertree. */
+#define HYP_H 20
+/* Hypertree layers count */
+#define HYP_D 2
+/* FORS+C tree height */
+#define HYP_B 11
+/* FORS+C trees count plus one */
+#define HYP_K 14
 
-#ifdef WIN32
-#include <malloc.h>
-// WARNING: Do not use it within loops! It can be used only within function
-// scope.
-#define ALLOC_ON_STACK(type, name, len) \
-    type* name = (type*)_alloca((len) * sizeof(type));
-#else  // WIN32
-// WARNING: Do not use it within loops! It can be used only within function
-// scope.
-#define ALLOC_ON_STACK(type, name, len) type name[len];
-#endif  // WIN32
-
-#define SECURE_ERASE(type, name, len) secure_erase(name, (len) * sizeof(type));
-
-void secure_erase(void* buf, size_t len);
-
-// data structure and functions for *_tree_hash algoritm
-
-struct Node
+/* checks whether bits in interval [(k - 1) * b; k * b) of digest are all 0 */
+static uint8_t md_suffix_nonzero(const uint8_t* digest)
 {
-    uint8_t pk[HYPERICUM_N_BYTES];
-    uint32_t h;
-};
-
-struct Node* hypericum_create_node(uint32_t h);
-
-void fill_bytes32(uint8_t* bytes, uint32_t value);
-
-uint32_t fill_uint32(const uint8_t* bytes);
-
-uint64_t fill_uint64(const uint8_t* bytes);
+    return (digest[17] & 0b00000001) | digest[18] | (digest[19] & 0b11000000);
+}

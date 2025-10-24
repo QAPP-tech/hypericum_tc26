@@ -143,12 +143,10 @@ int main()
         fprintBstr(fp_rsp, "msg = ", m, mlen);
 
         // Generate the public/private keypair
-        puts("KP!");
         if ((ret_val = crypto_sign_keypair(pk, sk)) != 0) {
             printf("crypto_sign_keypair returned <%d>\n", ret_val);
             return KAT_CRYPTO_FAILURE;
         }
-        puts("KP end");
         fprintBstr(fp_rsp, "pk = ", pk, CRYPTO_PUBLICKEYBYTES);
         fprintBstr(fp_rsp, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
 

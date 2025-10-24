@@ -25,6 +25,7 @@
 */
 
 #include "api.h"
+#include "drbg.h"
 #include "pack.h"
 #include "utils/intermediate.h"
 
@@ -33,6 +34,11 @@
 
 int main(int argc, char* argv[])
 {
+    unsigned char entropy_input[DRBG_INIT_BYTES_LEN];
+    for (int i = 0; i < DRBG_INIT_BYTES_LEN; i++)
+        entropy_input[i] = i;
+    randombytes_init(entropy_input);
+
     unsigned char msg[] = "Example of Hypericum signature for parameter set " PARAMSET_NAME;
     unsigned long long mlen = sizeof(msg);
 

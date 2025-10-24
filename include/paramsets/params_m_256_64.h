@@ -4,13 +4,13 @@
    Copyright (c) 2023, QApp. All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met: 
+   modification, are permitted provided that the following conditions are met:
 
    1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer. 
+   list of conditions and the following disclaimer.
    2. Redistributions in binary form must reproduce the above copyright notice,
    this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution. 
+   and/or other materials provided with the distribution.
 
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -29,15 +29,16 @@
 #include <stdint.h>
 
 /* Height of the hypertree. */
-#define HYP_H 66
+#define HYP_H 68
 /* Hypertree layers count */
-#define HYP_D 22
+#define HYP_D 4
 /* FORS+C tree height */
-#define HYP_B 9
+#define HYP_B 18
 /* FORS+C trees count plus one */
-#define HYP_K 36
+#define HYP_K 15
 
+/* checks whether bits in interval [(k - 1) * b; k * b) of digest are all 0 */
 static uint8_t md_suffix_nonzero(const uint8_t* digest)
 {
-    return (digest[39] & 0b00011111) | (digest[40] & 0b11110000);
+    return (digest[31] & 0b00001111) | digest[32] | (digest[33] & 0b11111100);
 }

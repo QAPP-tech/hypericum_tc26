@@ -31,6 +31,7 @@
 #include "stack.h"
 #include "utils.h"
 
+#include <assert.h>
 #include <string.h>
 
 // 'sk_seed' len: n
@@ -43,7 +44,7 @@ void hypericum_generate_fors_sk(
     hypericum_adrs_t* adrs,
     uint8_t* result)
 {
-    hypericum_adrs_set_type(adrs, address_fors_tree);
+    hypericum_adrs_set_type(adrs, address_keygen_fors);
     hypericum_adrs_set_fors_tree_height(adrs, 0);
     hypericum_adrs_set_fors_tree_index(adrs, idx);
     hypericum_prf(hash_algo, sk_seed, pk_seed, adrs, result);
@@ -61,6 +62,7 @@ void hypericum_fors_tree_hash(
     hypericum_adrs_t* adrs,
     uint8_t* result)
 {
+    assert((start_index & ((1u << target_node_h) - 1)) == 0);
     stack_root_t* stack_root_node = NULL;
 
     uint8_t sk[HYPERICUM_N_BYTES];
@@ -68,6 +70,7 @@ void hypericum_fors_tree_hash(
     for (uint32_t i = 0; i < (1u << target_node_h); i++) {
         hypericum_generate_fors_sk(
             hash_algo, sk_seed, pk_seed, start_index + i, adrs, sk);
+        hypericum_adrs_set_type(adrs, address_fors_tree);
 
         uint32_t node_h = 0;
         struct Node* node = hypericum_create_node(node_h);
