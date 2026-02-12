@@ -132,7 +132,7 @@ static void message_to_indices(uint32_t* indices, const unsigned char* m)
         indices[i] = 0;
         for (j = 0; j < HYP_B; j++) {
             indices[i] <<= 1;
-            indices[i] ^= (m[offset >> 3] >> (offset & 0x7)) & 0x1;
+            indices[i] |= (m[offset >> 3] >> (7 - (offset & 7))) & 1;
             offset++;
         }
     }

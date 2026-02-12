@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 
     unsigned char pk[CRYPTO_PUBLICKEYBYTES], sk[CRYPTO_SECRETKEYBYTES];
 
-
+    const uint8_t opt_const[] = HYPERICUM_OPT;
     printf("Digital signature algorithm: Hypericum\n");
     printf("Hash algorithm: Streebog (GOST R 34.11-2012)\n");
     printf("Message to sign: %s\n", msg);
@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     printf("Parameter b: %d\n", HYP_B);
     printf("Parameter k: %d\n", HYP_K);
     printf("w: %d\n", HYPERICUM_W);
-    printf("opt_const: %s\n", HYPERICUM_OPT);
+    printf("opt_const: %.*s\n", (int)sizeof(opt_const), opt_const);
     printf("================================================================================\n");
     int ret;
     // private (or secret, sk) and public (pk) key pair generation.

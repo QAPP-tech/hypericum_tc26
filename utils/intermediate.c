@@ -19,7 +19,8 @@ void print_hex(const char *label, const uint8_t *data, unsigned long long data_l
 
 void print_sign_randomization_parameters(const hypericum_sig_internal_t *sig)
 {
-    printf("opt_const: %s\n\n", HYPERICUM_OPT);
+    const uint8_t opt_const[] = HYPERICUM_OPT;
+    printf("opt_const: %.*s\n", (int)sizeof(opt_const), opt_const);
     print_hex("R", sig->r, HYPERICUM_N_BYTES);
 }
 

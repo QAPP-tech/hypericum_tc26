@@ -81,12 +81,13 @@ int hypericum_sign(
     int ret = 0;
     const hash_algo_t hash_algo = hash_algo_new_gost256();
     const hash_algo_t hash_algo_512 = hash_algo_new_gost512();
+    const uint8_t opt_const[] = HYPERICUM_OPT;
 
     hypericum_sk_internal_t sk = hypericum_sk_parse((uint8_t*)sk_bytes);
     hypericum_sig_internal_t sig = hypericum_sig_parse(result_sig);
 
     hypericum_prf_msg(
-        hash_algo, sk.prf, sk.pk.seed, (const uint8_t*)HYPERICUM_OPT, msg,
+        hash_algo, sk.prf, sk.pk.seed, opt_const, msg,
         msg_len, sig.r);
 
     INTERMEDIATE_OUTPUT(print_sign_randomization_parameters(&sig));
